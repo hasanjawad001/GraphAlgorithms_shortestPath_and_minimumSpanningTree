@@ -117,6 +117,6 @@ if __name__ == '__main__':
     # p.print_info()
 
     # find shortest path
-    p.find_shortest_path(verbose=True)
+    p.find_shortest_path(verbose=False)
 
 
