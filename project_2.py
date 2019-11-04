@@ -36,13 +36,19 @@ class Graph:
             tv = None
             if fv_name not in vertex_name_list:
                 vertex_name_list.append(fv_name)
-                fv=Vertex(n=fv_name)
+                if fv_name == ns.name:
+                    fv = ns
+                else:
+                    fv = Vertex(n=fv_name)
                 self.vertices.append(fv)
             else:
                 fv = self.get_vertex_by_name(n=fv_name)
             if tv_name not in vertex_name_list:
                 vertex_name_list.append(tv_name)
-                tv=Vertex(n=tv_name)
+                if tv_name == ns.name:
+                    tv=ns
+                else:
+                    tv=Vertex(n=tv_name)
                 self.vertices.append(tv)
             else:
                 tv = self.get_vertex_by_name(n=tv_name)
@@ -51,17 +57,34 @@ class Graph:
                 e=Edge(fv=fv, tv=tv, w=w)
                 self.edges.append(e)
             else:
-                e1=e=Edge(fv=fv, tv=tv, w=w)
+                e1=Edge(fv=fv, tv=tv, w=w)
                 self.edges.append(e1)
-                e2=e=Edge(fv=tv, tv=fv, w=w)
+                e2=Edge(fv=tv, tv=fv, w=w)
                 self.edges.append(e2)
 
-class P2:
+    def get_adjacent(self, v=None):
+        l=[]
+        if v:
+            v_name=v.name
+            for e in self.edges:
+                if e.from_vertex.name == v_name:
+                    v_adjacent = e.to_vertex
+                    l.append(v_adjacent)
+        return l
 
+    def get_edge_from_vertices(self, fv=None, tv=None):
+        edge=None
+        for e in self.edges:
+            if e.from_vertex.name==fv.name and e.to_vertex.name == tv.name:
+                edge=e
+                break
+        return edge
+
+class P2:
     def __init__(self):
         self.n_vertex=0
         self.n_edge=0
-        self.type_graph=''
+        self.type_graph='' # directed/undirected
         self.edge_matrix = None
         self.node_source=''
 
@@ -80,6 +103,7 @@ class P2:
         else:
             ns_name= self.edge_matrix[0,0]
         self.node_source = Vertex(n=ns_name, dfs=0)
+        print('Source Node: %s'%(ns_name))
 
     def print_info(self):
         _info={
@@ -91,32 +115,81 @@ class P2:
         }
         pprint(_info)
 
+    def extract_min(self, q=[]):
+        u=q[0]
+        min_distance_from_source = sys.maxsize
+        for vertex in q:
+            dfs = vertex.distance_from_source
+            if dfs < min_distance_from_source:
+                u=vertex
+                min_distance_from_source=dfs
+        u_name=u.name if u.name else ''
+        if u_name:
+            for elem in q:
+                if elem.name == u_name:
+                    q.remove(elem)
+                    break
+        return u, q
+
+    def relax(self, graph=None, u=None, v=None):
+        e=graph.get_edge_from_vertices(fv=u, tv=v)
+        if e:
+            for v_v in graph.vertices:
+                if v_v.name == v.name:
+                    for v_u in graph.vertices:
+                        if v_u.name == u.name:
+                            if int(v_v.distance_from_source) > int(v_u.distance_from_source) + int(e.weight):
+                                v_v.distance_from_source = int(v_u.distance_from_source) + int(e.weight)
+                                v_v.parent = v_u
+        return graph
+
+    def print_path_and_cost(self, graph=None):
+        snode = None
+        for v in graph.vertices:
+            if v.name==self.node_source.name:
+                snode=v
+                break
+        for n in graph.vertices:
+            dnode = n
+            dcost = str(n.distance_from_source)
+            dpath = str(dnode.name)
+            parentnode=dnode.parent
+            while parentnode is not None:
+                dpath = str(parentnode.name) + " -> " + str(dpath)
+                parentnode = parentnode.parent
+            print('Node: %s, Cost: %s, Path: %s'%(dnode.name, dcost, dpath))
+
+    def apply_algo(self, name='', graph=None):
+        from copy import copy
+        if name=='dijkstra' and graph:
+            s=[]
+            q= copy(graph.vertices)
+            while len(q) != 0:
+                u, q = self.extract_min(q=q)
+                s.append(u)
+                adjacency_list = graph.get_adjacent(v=u)
+                for v in adjacency_list:
+                    graph=self.relax(graph=graph, u=u, v=v)
+            self.print_path_and_cost(graph=graph)
+
     def find_shortest_path(self, verbose=False):
-        g=Graph(
-            self.n_vertex,
-            self.n_edge,
-            self.type_graph,
-            self.edge_matrix,
-            self.node_source
-        )
-        if verbose:
-            for v in g.vertices:
-                print(v.name)
-            print('-----------------------------------------------------------')
-            for e in g.edges:
-                print(str(e.from_vertex.name) + "---" + str(e.to_vertex.name) + ":" + str(e.weight))
+        g=Graph(self.n_vertex, self.n_edge, self.type_graph, self.edge_matrix, self.node_source)
+        self.apply_algo(name='dijkstra', graph=g)
 
 if __name__ == '__main__':
-    #input text file
-    input_file_name='input_graph_1.txt'
+    #input text files
+    file_list = ['input_graph_1.txt', 'input_graph_2.txt', 'input_graph_3.txt', 'input_graph_4.txt']
+    # file_list = ['input_graph_4.txt']
+    for file in file_list:
+        input_file_name=file
+        #worker for project 2
+        p=P2()
+        i=p.read_input(file_name=input_file_name)
+        p.parse_input(i)
+        # p.print_info()
 
-    #worker for project 2
-    p=P2()
-    i=p.read_input(file_name=input_file_name)
-    p.parse_input(i)
-    # p.print_info()
-
-    # find shortest path
-    p.find_shortest_path(verbose=False)
+        # find shortest path
+        p.find_shortest_path(verbose=False)
+        print('------------------------------ END of File (%s) ---------------------------------'%(file))
 
 
