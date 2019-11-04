@@ -178,7 +178,7 @@ class P2:
 
 if __name__ == '__main__':
     #input text files
-    file_list = ['input_graph_1.txt', 'input_graph_2.txt', 'input_graph_3.txt', 'input_graph_4.txt']
+    file_list = ['dijkstra_graph_1.txt', 'dijkstra_graph_2.txt', 'dijkstra_graph_3.txt', 'dijkstra_graph_4.txt']
     # file_list = ['input_graph_4.txt']
     for file in file_list:
         input_file_name=file
