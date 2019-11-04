@@ -177,6 +177,9 @@ class P2:
         self.apply_algo(name='dijkstra', graph=g)
 
 if __name__ == '__main__':
+    print(" ============================================================================================================")
+    print("SHORTEST PATH ALGORITHM")
+    print()
     #input text files
     file_list = ['dijkstra_graph_1.txt', 'dijkstra_graph_2.txt', 'dijkstra_graph_3.txt', 'dijkstra_graph_4.txt']
     # file_list = ['input_graph_4.txt']
@@ -190,6 +193,11 @@ if __name__ == '__main__':
 
         # find shortest path
         p.find_shortest_path(verbose=False)
-        print('------------------------------ END of File (%s) ---------------------------------'%(file))
+        print('END of File (%s) -----------------------------------------------'%(file))
+    print()
+    print()
+    print("=============================================================================================================")
+    print("MINIMUM SPANNING TREE (KRUSKAL)")
+    print()
 
 
