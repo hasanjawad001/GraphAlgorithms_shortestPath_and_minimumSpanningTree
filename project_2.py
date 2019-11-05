@@ -53,6 +53,7 @@ class Graph:
                 self.vertices.append(tv)
             else:
                 tv = self.get_vertex_by_name(n=tv_name)
+            # print(row[2])
             w=int(row[2])
             if tg == 'D':
                 e=Edge(fv=fv, tv=tv, w=w)
