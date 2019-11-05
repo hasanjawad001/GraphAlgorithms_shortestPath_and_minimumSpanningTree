@@ -25,7 +25,7 @@ class Graph:
                     break
         return v
 
-    def __init__(self, nv, ne, tg, em, ns):
+    def __init__(self, nv, ne, tg, em, ns, t):
         self.vertices=[]
         self.edges=[]
         vertex_name_list=[]
@@ -57,10 +57,14 @@ class Graph:
                 e=Edge(fv=fv, tv=tv, w=w)
                 self.edges.append(e)
             else:
-                e1=Edge(fv=fv, tv=tv, w=w)
-                self.edges.append(e1)
-                e2=Edge(fv=tv, tv=fv, w=w)
-                self.edges.append(e2)
+                if t=='mst':
+                    e1=Edge(fv=fv, tv=tv, w=w)
+                    self.edges.append(e1)
+                else:
+                    e1=Edge(fv=fv, tv=tv, w=w)
+                    self.edges.append(e1)
+                    e2=Edge(fv=tv, tv=fv, w=w)
+                    self.edges.append(e2)
 
     def get_adjacent(self, v=None):
         l=[]
@@ -81,12 +85,13 @@ class Graph:
         return edge
 
 class P2:
-    def __init__(self):
+    def __init__(self, type=None):
         self.n_vertex=0
         self.n_edge=0
         self.type_graph='' # directed/undirected
         self.edge_matrix = None
         self.node_source=''
+        self.type=type
 
     def read_input(self, file_name=''):
         df = pd.read_csv(file_name, delimiter=' ', header=None)
@@ -96,14 +101,15 @@ class P2:
     def parse_input(self, i):
         self.n_vertex = int(i[0,0])
         self.n_edge = int(i[0,1])
-        self.type_graph = str(i[0,2])
+        self.type_graph = str(i[0,2]) if i[0,2] else 'U'
         self.edge_matrix = i[1:1+self.n_edge,:]
         if len(i) == self.n_edge + 2:
             ns_name=i[-1,0]
         else:
             ns_name= self.edge_matrix[0,0]
         self.node_source = Vertex(n=ns_name, dfs=0)
-        print('Source Node: %s'%(ns_name))
+        if self.type == 'sp':
+            print('Source Node: %s'%(ns_name))
 
     def print_info(self):
         _info={
@@ -171,13 +177,24 @@ class P2:
                 for v in adjacency_list:
                     graph=self.relax(graph=graph, u=u, v=v)
             self.print_path_and_cost(graph=graph)
+        elif name=='mst_kruskal' and graph:
+            mst_edge_list = []
+            sorted_edge_list = sorted(graph.edges, key=lambda item: item.weight)
+            # el = graph.edges
+            # for e in sorted_edge_list:
+            #     print(str(e.from_vertex.name) + "-" + str(e.to_vertex.name) + " : " + str(e.weight))
 
     def find_shortest_path(self, verbose=False):
-        g=Graph(self.n_vertex, self.n_edge, self.type_graph, self.edge_matrix, self.node_source)
+        g=Graph(self.n_vertex, self.n_edge, self.type_graph, self.edge_matrix, self.node_source, self.type)
         self.apply_algo(name='dijkstra', graph=g)
 
+    def find_mst(self, verbose=False):
+        g=Graph(self.n_vertex, self.n_edge, self.type_graph, self.edge_matrix, self.node_source, self.type)
+        self.apply_algo(name='mst_kruskal', graph=g)
+
+
 if __name__ == '__main__':
-    print(" ============================================================================================================")
+    print("=============================================================================================================")
     print("SHORTEST PATH ALGORITHM")
     print()
     #input text files
@@ -186,7 +203,7 @@ if __name__ == '__main__':
     for file in file_list:
         input_file_name=file
         #worker for project 2
-        p=P2()
+        p=P2(type='sp')
         i=p.read_input(file_name=input_file_name)
         p.parse_input(i)
         # p.print_info()
@@ -194,10 +211,26 @@ if __name__ == '__main__':
         # find shortest path
         p.find_shortest_path(verbose=False)
         print('END of File (%s) -----------------------------------------------'%(file))
+        print()
     print()
     print()
     print("=============================================================================================================")
     print("MINIMUM SPANNING TREE (KRUSKAL)")
     print()
+    #input text files
+    # file_list = ['mst_graph_1.txt', 'mst_graph_2.txt', 'mst_graph_3.txt', 'mst_graph_4.txt']
+    file_list = ['mst_graph_4.txt']
+    for file in file_list:
+        input_file_name=file
+        #worker for project 2
+        p=P2(type='mst')
+        i=p.read_input(file_name=input_file_name)
+        p.parse_input(i)
+        # # p.print_info()
+
+        # find mst
+        p.find_mst(verbose=False)
+        print('END of File (%s) -----------------------------------------------'%(file))
+        print()
 
 
