@@ -167,6 +167,20 @@ class P2:
                 parentnode = parentnode.parent
             print('Node: %s, Cost: %s, Path: %s'%(dnode.name, dcost, dpath))
 
+    def find_set(self, v=None):
+        result=None
+        if v:
+            c=v
+            while c.name != c.parent.name:
+                c = c.parent
+            result=c
+        return result
+
+    def union(self, fv, tv):
+        t=self.find_set(tv)
+        t.parent=fv
+        return
+
     def apply_algo(self, name='', graph=None):
         from copy import copy
         if name=='dijkstra' and graph:
@@ -189,9 +203,9 @@ class P2:
                 r+=1
             sorted_edge_list = sorted(graph.edges, key=lambda item: item.weight)
             for e in sorted_edge_list:
-                if e.from_vertex.parent.name != e.to_vertex.parent.name:
+                if self.find_set(e.from_vertex) != self.find_set(e.to_vertex):
                     a.append(e)
-                    e.to_vertex.parent = e.from_vertex.parent
+                    self.union(e.from_vertex, e.to_vertex)
             return a
 
     def find_shortest_path(self, verbose=False):
@@ -214,7 +228,7 @@ if __name__ == '__main__':
     print()
     #input text files
     file_list = ['dijkstra_graph_1.txt', 'dijkstra_graph_2.txt', 'dijkstra_graph_3.txt', 'dijkstra_graph_4.txt']
-    # file_list = ['input_graph_4.txt']
+    # file_list = []
     for file in file_list:
         input_file_name=file
         #worker for project 2
@@ -234,7 +248,7 @@ if __name__ == '__main__':
     print()
     #input text files
     file_list = ['mst_graph_1.txt', 'mst_graph_2.txt', 'mst_graph_3.txt', 'mst_graph_4.txt']
-    # file_list = ['mst_graph_4.txt']
+    # file_list = ['mst_graph_2.txt']
     for file in file_list:
         input_file_name=file
         #worker for project 2
