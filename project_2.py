@@ -4,10 +4,11 @@ import pandas as pd
 import sys
 
 class Vertex:
-    def __init__(self, n='', p=None, dfs=sys.maxsize):
+    def __init__(self, n='', p=None, dfs=sys.maxsize, r=0):
         self.name=n
         self.parent=p
         self.distance_from_source=dfs
+        self.rank=r
 
 class Edge:
     def __init__(self, fv=None, tv=None, w=None):
@@ -177,12 +178,20 @@ class P2:
                 for v in adjacency_list:
                     graph=self.relax(graph=graph, u=u, v=v)
             self.print_path_and_cost(graph=graph)
+            return []
         elif name=='mst_kruskal' and graph:
-            mst_edge_list = []
+            a = []
+            r=1
+            for v in graph.vertices:
+                v.parent=v
+                v.rank=r
+                r+=1
             sorted_edge_list = sorted(graph.edges, key=lambda item: item.weight)
-            # el = graph.edges
-            # for e in sorted_edge_list:
-            #     print(str(e.from_vertex.name) + "-" + str(e.to_vertex.name) + " : " + str(e.weight))
+            for e in sorted_edge_list:
+                if e.from_vertex.parent.name != e.to_vertex.parent.name:
+                    a.append(e)
+                    e.to_vertex.parent = e.from_vertex.parent
+            return a
 
     def find_shortest_path(self, verbose=False):
         g=Graph(self.n_vertex, self.n_edge, self.type_graph, self.edge_matrix, self.node_source, self.type)
@@ -190,7 +199,12 @@ class P2:
 
     def find_mst(self, verbose=False):
         g=Graph(self.n_vertex, self.n_edge, self.type_graph, self.edge_matrix, self.node_source, self.type)
-        self.apply_algo(name='mst_kruskal', graph=g)
+        a=self.apply_algo(name='mst_kruskal', graph=g)
+        total_cost = 0
+        for e in a:
+            print(str(e.from_vertex.name) + " -> " + str(e.to_vertex.name))
+            total_cost += int(e.weight)
+        print('total cost: %s'%(total_cost))
 
 
 if __name__ == '__main__':
@@ -218,8 +232,8 @@ if __name__ == '__main__':
     print("MINIMUM SPANNING TREE (KRUSKAL)")
     print()
     #input text files
-    # file_list = ['mst_graph_1.txt', 'mst_graph_2.txt', 'mst_graph_3.txt', 'mst_graph_4.txt']
-    file_list = ['mst_graph_4.txt']
+    file_list = ['mst_graph_1.txt', 'mst_graph_2.txt', 'mst_graph_3.txt', 'mst_graph_4.txt']
+    # file_list = ['mst_graph_4.txt']
     for file in file_list:
         input_file_name=file
         #worker for project 2
