@@ -1,7 +1,7 @@
 # REPORT: Project 2 - Graph Algorithms (Single Source Shortest Path & Minimum Spanning Tree)
 
 ### Submitted By:
-**Jawad Chowdhury, (ID# 801135477)**
+**Jawad Chowdhury**
 
 ---
 
