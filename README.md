@@ -1,4 +1,4 @@
-# REPORT: Project 2 - Graph Algorithms (Single Source Shortest Path & Minimum Spanning Tree)
+# Project Report - Graph Algorithms (Single Source Shortest Path & Minimum Spanning Tree)
 
 ### Submitted By:
 **Jawad Chowdhury**
@@ -7,11 +7,8 @@
 
 ## Report Pages
 
-### Page 1
-![Page 1](plots/report_project_2_page-0001.jpg)
-
-### Page 2
-![Page 2](plots/report_project_2_page-0002.jpg)
+### Page 1&2
+![Page 1&2](plots/report_project_2_page-0002.jpg)
 
 ### Page 3
 ![Page 3](plots/report_project_2_page-0003.jpg)
